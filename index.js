@@ -1,12 +1,14 @@
 const express = require('express')
 const AWS = require('aws-sdk')
 const cors = require('cors')
+const fileUpload = require('express-fileupload');
 
 const PORT = process.env.PORT || 8080
 const app = express()
 
 app.use(express.json())
 app.use(cors())
+app.use(fileUpload())
 
 const upload = require('./src/routes/uploadFile')
 const users = require('./src/routes/usersRoute')

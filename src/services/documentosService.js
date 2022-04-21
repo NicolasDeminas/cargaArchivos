@@ -10,8 +10,22 @@ const addDocumento = async (data) => {
     }
 }
 
+const findDocumentos = async (usuarioId) => {
+    try{
+        const documentos = await Documento.findAll({
+            where:{
+                usuarioId
+            }
+        })
+        return documentos
+    }catch(err){
+        console.log(err)
+    }
+}
+
 module.exports = {
-    addDocumento
+    addDocumento,
+    findDocumentos
 }
 
 

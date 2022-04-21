@@ -5,9 +5,18 @@ const User = require('./usersModel')
 const Usuario = require('./usuariosModel')
 
 const Documento = sequelize.define('Documento', {
+    tipo: {
+        type:DataTypes.STRING
+    },
+    descripcion:{
+        type:DataTypes.STRING
+    },
     url: {
         type:DataTypes.STRING,
         allowNull: false
+    },
+    fecha:{
+        type:DataTypes.DATE
     }
 })
 

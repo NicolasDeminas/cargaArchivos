@@ -1,4 +1,4 @@
-const {addDocumento} = require('../services/documentosService')
+const {addDocumento, findDocumentos} = require('../services/documentosService')
 const multiparty = require('multiparty');
 const fs = require('fs')
 const {uploadFile, signFile} = require('../config/awsS3')
@@ -16,36 +16,30 @@ const postDocumento = async (req, res) => {
 }
 
 const fileUpload = async (request, response) => {
-
     const {CreatedBy, UsuarioId, empresaId} = request.query
+    const {tipo, descripcion, fecha} = request.body
+    const file = request.files.file
 
-    const empresa = await findEmpresa(empresaId)
-    
-    // const razonSocial = empresa.dataValues.razonSocial
-    const form = new multiparty.Form();
-    form.parse(request, async (error, fields, files) => {
-      if (error) {
-        return response.status(500).send(error);
-      };
-      try {
-        const path = files.null[0].path;
-        const buffer = fs.readFileSync(path);
-        //const type = await FileType.fromBuffer(buffer);
-        const fileName = `${Date.now().toString()}`;
-        const data = await uploadFile(buffer, fileName, `pdf`, 'documentacion.bajas.0001');
+    try{
+      const buffer = file.data
+      const fileName = `${Date.now().toString()}`;
+      const data = await uploadFile(buffer, fileName, `pdf`, 'documentacion.bajas.0001');
+        console.log(data)
         const Location = data.Location
         const newDocumento = await addDocumento({
             url: Location,
             CreatedBy,
-            UsuarioId
+            UsuarioId,
+            tipo,
+            descripcion,
+            fecha
         })
+        console.log(newDocumento)
         return response.status(200).json({data, document: newDocumento});
-        // return response.status(200).send(`data`);
-      } catch (err) {
-        console.log(err)
-        return response.status(500).send(err);
-      }
-    });
+    }catch(err){
+
+      return response.status(500).send(err);
+    }
   }
 
 const getFile = (req, res) => {
@@ -57,8 +51,19 @@ const getFile = (req, res) => {
   res.json(signedFile)
 }
 
+const getDocuments = async (req, res) => {
+  try{
+    let {id} = req.params
+    const documentos = await findDocumentos(id)
+    res.json(documentos)
+  }catch(err){
+    return response.status(500).send(err);
+  }
+}
+
 module.exports = {
     postDocumento,
     fileUpload,
-    getFile
+    getFile,
+    getDocuments
 }
