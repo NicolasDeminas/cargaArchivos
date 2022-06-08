@@ -22,7 +22,7 @@ const Documento = sequelize.define('Documento', {
 
 Documento.belongsTo(User, {foreignKey: 'CreatedBy'})
 User.hasMany(Documento, {foreignKey: 'CreatedBy'})
-Documento.belongsTo(Usuario)
-Usuario.hasMany(Documento)
+Documento.belongsTo(Usuario, {foreignKey: 'usuario_cuentaId'})
+Usuario.hasMany(Documento, {foreignKey: 'usuario_cuentaId'})
 
 module.exports = Documento

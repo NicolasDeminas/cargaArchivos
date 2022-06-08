@@ -7,8 +7,8 @@ const obj = require('../config/buckets')
 
 const postDocumento = async (req, res) => {
     try{
-        const {url, CreatedBy, UsuarioId} = req.body
-        const newDocumento = await addDocumento({url, CreatedBy, UsuarioId})
+        const {url, CreatedBy, usuario_cuentaId} = req.body
+        const newDocumento = await addDocumento({url, CreatedBy, usuario_cuentaId})
         return res.json(newDocumento)
     }catch(err){
         console.log(err)
@@ -16,25 +16,37 @@ const postDocumento = async (req, res) => {
 }
 
 const fileUpload = async (request, response) => {
-    const {CreatedBy, UsuarioId, empresaId} = request.query
+    const {CreatedBy, usuario_cuentaId, empresaId} = request.query
     const {tipo, descripcion, fecha} = request.body
     const file = request.files.file
+
+    const arr = {
+      CreatedBy,
+      usuario_cuentaId,
+      empresaId,
+      tipo,
+      descripcion,
+      fecha,
+      file
+    }
+
+    console.log(arr)
 
     try{
       const buffer = file.data
       const fileName = `${Date.now().toString()}`;
       const data = await uploadFile(buffer, fileName, `pdf`, 'documentacion.bajas.0001');
-        console.log(data)
-        const Location = data.Location
-        const newDocumento = await addDocumento({
-            url: Location,
-            CreatedBy,
-            UsuarioId,
-            tipo,
-            descripcion,
-            fecha
+      const Location = data.Location
+      
+      const newDocumento = await addDocumento({
+          url: Location,
+          CreatedBy,
+          usuario_cuentaId,
+          tipo,
+          descripcion,
+          fecha
         })
-        console.log(newDocumento)
+        // console.log(newDocumento)
         return response.status(200).json({data, document: newDocumento});
     }catch(err){
 

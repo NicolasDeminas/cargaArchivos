@@ -10,11 +10,11 @@ const addDocumento = async (data) => {
     }
 }
 
-const findDocumentos = async (usuarioId) => {
+const findDocumentos = async (usuario_cuentaId) => {
     try{
         const documentos = await Documento.findAll({
             where:{
-                usuarioId
+                usuario_cuentaId
             }
         })
         return documentos
